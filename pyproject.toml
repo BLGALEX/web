@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "web"
+version = "1.0"
+description = "Backend of my wrb homework"
+authors = ["Aleksei Lepekha"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.26.0"
+pybliometrics = "^2.9.1"
+pandas = "^1.3.4"
+Django = "^3.2.8"
+django-crontab = "^0.7.1"
+bs4 = "^0.0.1"
+django-rest-auth = "^0.9.5"
+tqdm = "^4.62.3"
+openpyxl = "^3.0.9"
+transliterate = "^1.10.2"
+Levenshtein = "^0.15.0"
+PyYAML = "^6.0"
+uritemplate = "^4.1.1"
+urllib3 = "^1.26.7"
+
+[tool.poetry.dev-dependencies]
+django-cors-headers = "^3.10.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
