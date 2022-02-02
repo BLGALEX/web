@@ -54,22 +54,13 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = ('title', )
         model = Task
 
-    def validate(self, data):
-        title = data.get('title', '')
-
-        try:
-            task = Task.objects.get(title=title)
-        except:
-            return data
-
-        if task.title == title:
-            raise serializers.ValidationError('Task with such name already exist')
-        else:
-            return data
         
 class TaskIdSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length=255)
+    id=serializers.IntegerField()
+    
     class Meta:
-        fields = ('id', )
+        fields = ('id','username')
         model = Task
 
     def validate(self, data):
@@ -82,6 +73,7 @@ class TaskIdSerializer(serializers.ModelSerializer):
                 'Not such task'
             )
         task = Task.objects.get(id=id)
+        
         if task.user.username != username:
             raise serializers.ValidationError(
                 'Not such task'

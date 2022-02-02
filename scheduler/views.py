@@ -72,24 +72,60 @@ class TodosAPIView(APIView):
 
 class TodoAPIView(APIView):
     permission_classes = (AllowAny,)
-    task_serializer = TaskIdSerializer
+    task_id_serializer = TaskIdSerializer
     user_serializer = LoginSerializer
+    task_serializer = TaskSerializer
 
     def get(self, request, task_id):
         user = request.data.get('user', {})
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
+        
+        data = {'id': task_id, 'username': user['username']}
+        task_id_serializer = self.task_id_serializer(data=data)
+        task_id_serializer.is_valid(raise_exception=True)
 
-        task_serializer = self.task_serializer(data={'id': task_id, 'username': user['username']})
-        task_serializer.is_valid(raise_exception=True)
-
-        task = Task.objects.filter(id=task_id).values('id', 'title', 'complete')
+        task = Task.objects.filter(id=task_id).values('id', 'title', 'complete')[0]
         response = {"task": task}
         return Response(response, status=status.HTTP_200_OK)
 
     def put(self, request, task_id):
         user = request.data.get('user', {})
+        task_data = request.data.get('task', {})
+
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
+        
+        data = {'id': task_id, 'username': user['username']}
+        task_id_serializer = self.task_id_serializer(data=data)
+        task_id_serializer.is_valid(raise_exception=True)
 
-        return Response({}, status=status.HTTP_200_OK)
+        task_serializer = self.task_serializer(data=task_data)
+        task_serializer.is_valid(raise_exception=True)
+
+        task = Task.objects.get(id=task_id)
+        title = task_data.get('title', None)
+        if title is not None:
+            task.title = title
+        complete = task_data.get('complete', None)
+        if complete is not None:
+            task.complete = complete
+        task.save()
+        task = Task.objects.filter(id=task_id).values('id', 'title', 'complete')[0]
+
+        return Response({"task": task}, status=status.HTTP_200_OK)
+    
+    def delete(self, request, task_id):
+        user = request.data.get('user', {})
+
+        user_serializer = self.user_serializer(data=user)
+        user_serializer.is_valid(raise_exception=True)
+        
+        data = {'id': task_id, 'username': user['username']}
+        task_id_serializer = self.task_id_serializer(data=data)
+        task_id_serializer.is_valid(raise_exception=True)
+
+        task = Task.objects.get(id=task_id)
+        task.delete()
+
+        return Response({"task": {"title": task.title}}, status=status.HTTP_200_OK)

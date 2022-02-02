@@ -38,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Task(models.Model):
     user=models.ForeignKey(User, on_delete=models.CASCADE)
-    title=models.CharField(max_length=255, unique=True)
+    title=models.CharField(max_length=255)
     complete=models.BooleanField(default=False)
 
 
