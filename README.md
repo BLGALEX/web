@@ -11,7 +11,10 @@
 
 Активируем виртуальную машину poetry, выполняем миграции и запускаем сервис
 > poetry shell
+> 
 > ./manage.py makemigrations
+> 
 > ./manage.py migrate
+> 
 > ./manage.py  runserver 0.0.0.0:5000
 
