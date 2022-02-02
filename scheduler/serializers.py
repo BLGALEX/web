@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 
-from .models import User, Task
+from .models import User, Task, File
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -79,3 +79,8 @@ class TaskIdSerializer(serializers.ModelSerializer):
                 'Not such task'
             )
         return data
+
+class FileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = File
+        fields = ('file', 'user')

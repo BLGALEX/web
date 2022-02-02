@@ -43,7 +43,7 @@ class Task(models.Model):
 
 
 def user_directory_path(instance, filename):
-    return 'user_{0}/{1}'.format(instance.user.id, filename)
+    return 'user_{0}/{1}'.format(instance.user.username, filename)
 
 
 class File(models.Model):
