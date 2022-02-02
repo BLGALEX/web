@@ -1,8 +1,11 @@
 from django.urls import path
 
-from .views import RegistrationAPIView
+from .views import *
 
 app_name = 'scheduler'
 urlpatterns = [
-    path('user/', RegistrationAPIView.as_view()),
+    path('user/register/', RegistrationAPIView.as_view()),
+    path('user/login/', LoginAPIView.as_view()),
+    path('todo', TodosAPIView.as_view()),
+    path('todo/<int:task_id>', TodoAPIView.as_view()),
 ]
