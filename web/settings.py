@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-rwp6*=+$_vzlr!e8f_6+!-1smo+tu8%5a#@-06)n1($fthte+f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['okboomers.top', 'localhost', '159.65.207.158']
+ALLOWED_HOSTS = ['localhost', '*']
 
 
 # Application definition

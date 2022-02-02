@@ -3,8 +3,10 @@ from rest_framework.parsers import FileUploadParser, FormParser, JSONParser, Mul
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from django.http.response import HttpResponse
 from rest_framework.views import APIView
 from django.core import serializers as ser
+import mimetypes
 
 from .serializers import *
 from .models import *
@@ -157,13 +159,13 @@ class FileAPIView(APIView):
             }
         return Response(response, status=status.HTTP_201_CREATED)
 
-    def get(self, request, file_id=None):
+    def get(self, request, file_name=None):
         user = request.data
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
         user_id = User.objects.get(username=user['username'])
 
-        if file_id is None:
+        if file_name is None:
             files = File.objects.filter(user=user_id)
             response = []
             for file in files:
@@ -173,35 +175,39 @@ class FileAPIView(APIView):
                     "id": file.id
                 })
         else:
-            files = File.objects.filter(user=user_id, id=file_id)
+            files = File.objects.filter(user=user_id, file=file_name)
             if len(files) == 0:
                 raise serializers.ValidationError(
                 'Not such file'
             )
             file = files[0]
-            response = {
-                    "file": file.file.name,
-                    "size": f'{round((file.file.size / 1024) / 1024, 2)} Mb',
-                    "id": file.id
-                }
+            filepath = file.file.path
+            path = open(filepath, 'rb')
+            mime_type, _ = mimetypes.guess_type(filepath)
+            response = HttpResponse(path, content_type=mime_type)
+            response['Content-Disposition'] = f"attachment; filename={file.file.name}"
+            return response
 
         return Response(response, status=status.HTTP_200_OK)
 
-    def delete(self, request, file_id=None):
+    def delete(self, request, file_name=None):
         user = request.data
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
         user_id = User.objects.get(username=user['username'])
 
         try:
-            file = File.objects.get(id=file_id, user=user_id)
+            file = File.objects.filter(file=file_name, user=user_id)[0]
         except:
             raise serializers.ValidationError(
             'Not such file'
         )
-        file.delete(save=False)
+        name = file.file.name
+        file.delete()
+        file.file.delete(save=False)
+        
         response = {
-                    "file": file.file.name
+                    "file": name
                 }
         return Response(response, status=status.HTTP_200_OK)
 
