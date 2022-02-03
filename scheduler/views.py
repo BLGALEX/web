@@ -1,12 +1,11 @@
-from urllib import response
+import mimetypes
+
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.http.response import HttpResponse
 from rest_framework.views import APIView
-from django.core import serializers as ser
-import mimetypes
+from django.http.response import HttpResponse
 
 from .serializers import *
 from .models import *
@@ -219,9 +218,9 @@ class FileAPIView(APIView):
                 raise serializers.ValidationError('Not such file')
             file = files[0]
             filepath = file.file.path
-            path = open(filepath, 'rb')
-            mime_type, _ = mimetypes.guess_type(filepath)
-            response = HttpResponse(path, content_type=mime_type)
+            with open(filepath, 'rb') as path:
+                mime_type, _ = mimetypes.guess_type(filepath)
+                response = HttpResponse(path, content_type=mime_type)
             response['Content-Disposition'] = f"attachment; filename={file.file.name}"
             return response
 

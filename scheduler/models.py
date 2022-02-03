@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -48,7 +47,7 @@ class Task(models.Model):
 
 
 def user_directory_path(instance, filename):
-    return 'user_{0}/{1}'.format(instance.user.username, filename)
+    return f'user_{instance.user.username}/{filename}'
 
 
 class File(models.Model):

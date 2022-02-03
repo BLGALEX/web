@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 
@@ -23,9 +22,9 @@ class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=128, write_only=True)
 
-    def validate(self, data):
-        password = data.get('password', None)
-        username = data.get('username', None)
+    def validate(self, attrs):
+        password = attrs.get('password', None)
+        username = attrs.get('username', None)
         if password is None:
             raise serializers.ValidationError(
                 'A password is required to log in.'
@@ -63,9 +62,9 @@ class TaskIdSerializer(serializers.ModelSerializer):
         fields = ('id', 'username')
         model = Task
 
-    def validate(self, data):
-        id = data.get('id', '')
-        username = data.get('username', '')
+    def validate(self, attrs):
+        id = attrs.get('id', '')
+        username = attrs.get('username', '')
         try:
             Task.objects.get(id=id)
         except:
@@ -78,7 +77,7 @@ class TaskIdSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Not such task'
             )
-        return data
+        return attrs
 
 
 class FileSerializer(serializers.ModelSerializer):
