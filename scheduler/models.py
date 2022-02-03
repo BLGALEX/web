@@ -1,9 +1,12 @@
-from django.conf import settings 
+from django.conf import settings
 from django.contrib.auth.models import (
-	AbstractBaseUser, BaseUserManager, PermissionsMixin
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin
 )
 
 from django.db import models
+
 
 class UserManager(BaseUserManager):
 
@@ -27,6 +30,7 @@ class UserManager(BaseUserManager):
 
         return user
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(db_index=True, max_length=255, unique=True)
     USERNAME_FIELD = 'username'
@@ -36,10 +40,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username
 
+
 class Task(models.Model):
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
-    title=models.CharField(max_length=255)
-    complete=models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    complete = models.BooleanField(default=False)
 
 
 def user_directory_path(instance, filename):
@@ -47,5 +52,5 @@ def user_directory_path(instance, filename):
 
 
 class File(models.Model):
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
-    file=models.FileField(upload_to=user_directory_path)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=user_directory_path)

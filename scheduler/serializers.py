@@ -40,7 +40,7 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'A user with this username and password was not found.'
             )
-        
+
         return {
             'username': user.username
         }
@@ -48,19 +48,19 @@ class LoginSerializer(serializers.Serializer):
 
 class TaskSerializer(serializers.ModelSerializer):
 
-    title=serializers.CharField(max_length=255)
-    
+    title = serializers.CharField(max_length=255)
+
     class Meta:
         fields = ('title', )
         model = Task
 
-        
+
 class TaskIdSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=255)
-    id=serializers.IntegerField()
-    
+    id = serializers.IntegerField()
+
     class Meta:
-        fields = ('id','username')
+        fields = ('id', 'username')
         model = Task
 
     def validate(self, data):
@@ -73,12 +73,13 @@ class TaskIdSerializer(serializers.ModelSerializer):
                 'Not such task'
             )
         task = Task.objects.get(id=id)
-        
+
         if task.user.username != username:
             raise serializers.ValidationError(
                 'Not such task'
             )
         return data
+
 
 class FileSerializer(serializers.ModelSerializer):
     class Meta:
