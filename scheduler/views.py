@@ -17,7 +17,7 @@ class RegistrationAPIView(APIView):
     serializer_class = RegistrationSerializer
 
     def post(self, request):
-        user = request.data.get('user', {})
+        user = request.data
 
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
@@ -31,7 +31,7 @@ class LoginAPIView(APIView):
     serializer_class = LoginSerializer
 
     def post(self, request):
-        user = request.data.get('user', {})
+        user = request.data
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
 
@@ -44,9 +44,11 @@ class TodosAPIView(APIView):
     user_serializer = LoginSerializer
 
     def post(self, request):
-        task = request.data.get('task', {})
-        user = request.data.get('user', {})
-
+        data = request.data
+        if type(request.data) != type(dict()):
+            data = request.data.dict()
+        task = data
+        user = data
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
 
@@ -54,7 +56,7 @@ class TodosAPIView(APIView):
         task_serializer.is_valid(raise_exception=True)
         
         task['user'] = User.objects.get(username=user['username'])
-        instance = Task.objects.create(**task)
+        instance = Task.objects.create(user=task['user'], title=task['title'], complete=task.get('complete', False))
 
         response = task_serializer.data
         response['id'] = instance.id
@@ -62,7 +64,11 @@ class TodosAPIView(APIView):
         return Response(response, status=status.HTTP_201_CREATED)
 
     def get(self, request):
-        user = request.data.get('user', {})
+        data = request.data
+        if type(request.data) != type(dict()):
+            data = request.data.dict()
+        print(data)
+        user = data
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
         user_id = User.objects.get(username=user['username'])
@@ -80,7 +86,10 @@ class TodoAPIView(APIView):
     task_serializer = TaskSerializer
 
     def get(self, request, task_id):
-        user = request.data.get('user', {})
+        data = request.data
+        if type(request.data) != type(dict()):
+            data = request.data.dict()
+        user = data
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
         
@@ -93,8 +102,11 @@ class TodoAPIView(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
     def put(self, request, task_id):
-        user = request.data.get('user', {})
-        task_data = request.data.get('task', {})
+        data = request.data
+        if type(request.data) != type(dict()):
+            data = request.data.dict()
+        user = data
+        task_data = data
 
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
@@ -102,9 +114,6 @@ class TodoAPIView(APIView):
         data = {'id': task_id, 'username': user['username']}
         task_id_serializer = self.task_id_serializer(data=data)
         task_id_serializer.is_valid(raise_exception=True)
-
-        task_serializer = self.task_serializer(data=task_data)
-        task_serializer.is_valid(raise_exception=True)
 
         task = Task.objects.get(id=task_id)
         title = task_data.get('title', None)
@@ -119,7 +128,10 @@ class TodoAPIView(APIView):
         return Response({"task": task}, status=status.HTTP_200_OK)
     
     def delete(self, request, task_id):
-        user = request.data.get('user', {})
+        data = request.data
+        if type(request.data) != type(dict()):
+            data = request.data.dict()
+        user = data
 
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
@@ -141,8 +153,11 @@ class FileAPIView(APIView):
     user_serializer = LoginSerializer
 
     def post(self, request):
-        user = request.data
-        file_data = request.data
+        data = request.data
+        if type(request.data) != type(dict()):
+            data = request.data.dict()
+        user = data
+        file_data = data
 
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
@@ -160,7 +175,10 @@ class FileAPIView(APIView):
         return Response(response, status=status.HTTP_201_CREATED)
 
     def get(self, request, file_name=None):
-        user = request.data
+        data = request.data
+        if type(request.data) != type(dict()):
+            data = request.data.dict()
+        user = data
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
         user_id = User.objects.get(username=user['username'])
@@ -191,7 +209,10 @@ class FileAPIView(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
     def delete(self, request, file_name=None):
-        user = request.data
+        data = request.data
+        if type(request.data) != type(dict()):
+            data = request.data.dict()
+        user = data
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
         user_id = User.objects.get(username=user['username'])

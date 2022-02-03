@@ -6,8 +6,8 @@ app_name = 'scheduler'
 urlpatterns = [
     path('user/register/', RegistrationAPIView.as_view()),
     path('user/login/', LoginAPIView.as_view()),
-    path('todo', TodosAPIView.as_view()),
+    path('todo/', TodosAPIView.as_view()),
     path('todo/<int:task_id>', TodoAPIView.as_view()),
     path('files/<path:file_name>', FileAPIView.as_view()),
-    path('files', FileAPIView.as_view())
+    path('files/', FileAPIView.as_view())
 ]
