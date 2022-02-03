@@ -31,4 +31,11 @@
 Добавление новой задачи
 ![Добавление новой задачи](https://user-images.githubusercontent.com/58458024/152282852-2332ef08-7f00-4e4a-a89b-bdb898f09c9d.png)
 
+Получение списка задач
+![Получение списка задач](https://user-images.githubusercontent.com/58458024/152283045-150edd52-966c-45e3-8be9-332fefd562e4.png)
 
+Изменение полей задачи (title и/или complete)
+![Изменение полей задачи](https://user-images.githubusercontent.com/58458024/152283256-cb696979-5d49-486d-9536-fb3ca38873f0.png)
+
+Удаление задачи
+![image](https://user-images.githubusercontent.com/58458024/152283325-933d2261-d87f-4b3f-b16f-44dc58a03036.png)
