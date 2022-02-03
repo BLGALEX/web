@@ -5,14 +5,11 @@ from .models import User, Task, File
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        max_length=128,
-        write_only=True
-    )
+    password = serializers.CharField(max_length=128, write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'password']
+        fields = ["username", "password"]
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
@@ -23,26 +20,20 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=128, write_only=True)
 
     def validate(self, attrs):
-        password = attrs.get('password', None)
-        username = attrs.get('username', None)
+        password = attrs.get("password", None)
+        username = attrs.get("username", None)
         if password is None:
-            raise serializers.ValidationError(
-                'A password is required to log in.'
-            )
+            raise serializers.ValidationError("A password is required to log in.")
 
         if username is None:
-            raise serializers.ValidationError(
-                'An username is required to log in.'
-            )
+            raise serializers.ValidationError("An username is required to log in.")
         user = authenticate(username=username, password=password)
         if user is None:
             raise serializers.ValidationError(
-                'A user with this username and password was not found.'
+                "A user with this username and password was not found."
             )
 
-        return {
-            'username': user.username
-        }
+        return {"username": user.username}
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -50,7 +41,7 @@ class TaskSerializer(serializers.ModelSerializer):
     title = serializers.CharField(max_length=255)
 
     class Meta:
-        fields = ('title', )
+        fields = ("title",)
         model = Task
 
 
@@ -59,28 +50,24 @@ class TaskIdSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
 
     class Meta:
-        fields = ('id', 'username')
+        fields = ("id", "username")
         model = Task
 
     def validate(self, attrs):
-        id = attrs.get('id', '')
-        username = attrs.get('username', '')
+        id = attrs.get("id", "")
+        username = attrs.get("username", "")
         try:
             Task.objects.get(id=id)
         except:
-            raise serializers.ValidationError(
-                'Not such task'
-            )
+            raise serializers.ValidationError("Not such task")
         task = Task.objects.get(id=id)
 
         if task.user.username != username:
-            raise serializers.ValidationError(
-                'Not such task'
-            )
+            raise serializers.ValidationError("Not such task")
         return attrs
 
 
 class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
-        fields = ('file', 'user')
+        fields = ("file", "user")

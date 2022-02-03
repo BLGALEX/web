@@ -1,17 +1,16 @@
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
-    PermissionsMixin
+    PermissionsMixin,
 )
 
 from django.db import models
 
 
 class UserManager(BaseUserManager):
-
     def create_user(self, username, password=None):
         if username is None:
-            raise TypeError('Users must have a username.')
+            raise TypeError("Users must have a username.")
 
         user = self.model(username=username)
         user.set_password(password)
@@ -21,7 +20,7 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, username, password):
         if password is None:
-            raise TypeError('Superusers must have a password.')
+            raise TypeError("Superusers must have a password.")
 
         user = self.create_user(username, password)
         user.is_superuser = True
@@ -32,7 +31,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(db_index=True, max_length=255, unique=True)
-    USERNAME_FIELD = 'username'
+    USERNAME_FIELD = "username"
 
     objects = UserManager()
 
@@ -47,7 +46,7 @@ class Task(models.Model):
 
 
 def user_directory_path(instance, filename):
-    return f'user_{instance.user.username}/{filename}'
+    return f"user_{instance.user.username}/{filename}"
 
 
 class File(models.Model):

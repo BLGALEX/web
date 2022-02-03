@@ -55,15 +55,13 @@ class TodosAPIView(APIView):
         task_serializer = self.task_serializer(data=task)
         task_serializer.is_valid(raise_exception=True)
 
-        task['user'] = User.objects.get(username=user['username'])
+        task["user"] = User.objects.get(username=user["username"])
         instance = Task.objects.create(
-            user=task['user'],
-            title=task['title'],
-            complete=task.get('complete', False)
+            user=task["user"], title=task["title"], complete=task.get("complete", False)
         )
 
         response = task_serializer.data
-        response['id'] = instance.id
+        response["id"] = instance.id
 
         return Response(response, status=status.HTTP_201_CREATED)
 
@@ -75,13 +73,11 @@ class TodosAPIView(APIView):
         user = data
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
-        user_id = User.objects.get(username=user['username'])
+        user_id = User.objects.get(username=user["username"])
 
-        tasks = list(Task.objects.filter(user=user_id).values(
-            'id',
-            'title',
-            'complete'
-        ))
+        tasks = list(
+            Task.objects.filter(user=user_id).values("id", "title", "complete")
+        )
         response = {"tasks": tasks}
 
         return Response(response, status=status.HTTP_200_OK)
@@ -101,15 +97,11 @@ class TodoAPIView(APIView):
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
 
-        data = {'id': task_id, 'username': user['username']}
+        data = {"id": task_id, "username": user["username"]}
         task_id_serializer = self.task_id_serializer(data=data)
         task_id_serializer.is_valid(raise_exception=True)
 
-        task = Task.objects.filter(id=task_id).values(
-            'id',
-            'title',
-            'complete'
-        )[0]
+        task = Task.objects.filter(id=task_id).values("id", "title", "complete")[0]
         response = {"task": task}
         return Response(response, status=status.HTTP_200_OK)
 
@@ -123,23 +115,19 @@ class TodoAPIView(APIView):
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
 
-        data = {'id': task_id, 'username': user['username']}
+        data = {"id": task_id, "username": user["username"]}
         task_id_serializer = self.task_id_serializer(data=data)
         task_id_serializer.is_valid(raise_exception=True)
 
         task = Task.objects.get(id=task_id)
-        title = task_data.get('title', None)
+        title = task_data.get("title", None)
         if title is not None:
             task.title = title
-        complete = task_data.get('complete', None)
+        complete = task_data.get("complete", None)
         if complete is not None:
             task.complete = complete
         task.save()
-        task = Task.objects.filter(id=task_id).values(
-            'id',
-            'title',
-            'complete'
-        )[0]
+        task = Task.objects.filter(id=task_id).values("id", "title", "complete")[0]
 
         return Response({"task": task}, status=status.HTTP_200_OK)
 
@@ -152,18 +140,14 @@ class TodoAPIView(APIView):
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
 
-        data = {'id': task_id, 'username': user['username']}
+        data = {"id": task_id, "username": user["username"]}
         task_id_serializer = self.task_id_serializer(data=data)
         task_id_serializer.is_valid(raise_exception=True)
 
         task = Task.objects.get(id=task_id)
         task.delete()
 
-        return Response({
-            "task": {"title": task.title}
-            },
-            status=status.HTTP_200_OK
-        )
+        return Response({"task": {"title": task.title}}, status=status.HTTP_200_OK)
 
 
 class FileAPIView(APIView):
@@ -181,8 +165,8 @@ class FileAPIView(APIView):
 
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
-        user = User.objects.get(username=user['username'])
-        file_data['user'] = user.id
+        user = User.objects.get(username=user["username"])
+        file_data["user"] = user.id
         file_serializer = self.file_serializer(data=file_data)
         file_serializer.is_valid(raise_exception=True)
 
@@ -190,8 +174,8 @@ class FileAPIView(APIView):
         response = {
             "id": instance.id,
             "file": instance.file.name,
-            "size": f'{round((instance.file.size / 1024) / 1024, 2)} Mb',
-            }
+            "size": f"{round((instance.file.size / 1024) / 1024, 2)} Mb",
+        }
         return Response(response, status=status.HTTP_201_CREATED)
 
     def get(self, request, file_name=None):
@@ -201,27 +185,29 @@ class FileAPIView(APIView):
         user = data
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
-        user_id = User.objects.get(username=user['username'])
+        user_id = User.objects.get(username=user["username"])
 
         if file_name is None:
             files = File.objects.filter(user=user_id)
             response = []
             for file in files:
-                response.append({
-                    "file": file.file.name,
-                    "size": f'{round((file.file.size / 1024) / 1024, 2)} Mb',
-                    "id": file.id
-                })
+                response.append(
+                    {
+                        "file": file.file.name,
+                        "size": f"{round((file.file.size / 1024) / 1024, 2)} Mb",
+                        "id": file.id,
+                    }
+                )
         else:
             files = File.objects.filter(user=user_id, file=file_name)
             if len(files) == 0:
-                raise serializers.ValidationError('Not such file')
+                raise serializers.ValidationError("Not such file")
             file = files[0]
             filepath = file.file.path
-            with open(filepath, 'rb') as path:
+            with open(filepath, "rb") as path:
                 mime_type, _ = mimetypes.guess_type(filepath)
                 response = HttpResponse(path, content_type=mime_type)
-            response['Content-Disposition'] = f"attachment; filename={file.file.name}"
+            response["Content-Disposition"] = f"attachment; filename={file.file.name}"
             return response
 
         return Response(response, status=status.HTTP_200_OK)
@@ -233,17 +219,15 @@ class FileAPIView(APIView):
         user = data
         user_serializer = self.user_serializer(data=user)
         user_serializer.is_valid(raise_exception=True)
-        user_id = User.objects.get(username=user['username'])
+        user_id = User.objects.get(username=user["username"])
 
         try:
             file = File.objects.filter(file=file_name, user=user_id)[0]
         except:
-            raise serializers.ValidationError('Not such file')
+            raise serializers.ValidationError("Not such file")
         name = file.file.name
         file.delete()
         file.file.delete(save=False)
 
-        response = {
-                    "file": name
-                }
+        response = {"file": name}
         return Response(response, status=status.HTTP_200_OK)
